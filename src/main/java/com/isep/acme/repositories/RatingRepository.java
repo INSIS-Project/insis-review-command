@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface RatingRepository extends CrudRepository<Rating, Long> {
 
-    @Query("SELECT r FROM Rating r WHERE r.rate=:rate")
-    Optional<Rating> findByRate(Double rate);
+	@Query("SELECT r FROM Rating r WHERE r.rate=:rate")
+	Optional<Rating> findByRate(Double rate);
 
 }

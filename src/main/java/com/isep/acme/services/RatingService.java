@@ -6,5 +6,5 @@ import com.isep.acme.model.Rating;
 
 public interface RatingService {
 
-    Optional<Rating> findByRate(Double rate);
+	Optional<Rating> findByRate(Double rate);
 }

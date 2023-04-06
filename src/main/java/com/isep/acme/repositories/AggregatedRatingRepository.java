@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AggregatedRatingRepository extends CrudRepository<AggregatedRating, Long> {
 
-    @Query("SELECT a FROM AggregatedRating a WHERE a.product=:product")
-    Optional<AggregatedRating> findByProductId(Product product);
+	@Query("SELECT a FROM AggregatedRating a WHERE a.product=:product")
+	Optional<AggregatedRating> findByProductId(Product product);
 
 }

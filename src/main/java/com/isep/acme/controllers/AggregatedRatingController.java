@@ -16,15 +16,14 @@ import com.isep.acme.services.AggregatedRatingService;
 @RequestMapping("/aggregatedrating")
 public class AggregatedRatingController {
 
-    @Autowired
-    AggregatedRatingService aService;
+	@Autowired
+	AggregatedRatingService aService;
 
+	@GetMapping(value = "/{sku}")
+	ResponseEntity<AggregatedRating> getAverage(@PathVariable("sku") final String sku) {
 
-    @GetMapping(value = "/{sku}")
-    ResponseEntity<AggregatedRating> getAverage(@PathVariable("sku") final String sku ) {
+		AggregatedRating a = aService.save(sku);
 
-        AggregatedRating a = aService.save(sku);
-
-        return ResponseEntity.ok().body(a);
-    }
+		return ResponseEntity.ok().body(a);
+	}
 }

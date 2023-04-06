@@ -11,14 +11,14 @@ import java.time.LocalDate;
 @Service
 public class RestService {
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    public RestService(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.build();
-    }
+	public RestService(RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder.build();
+	}
 
-    public String getFunFact(LocalDate date) {
-        String url = "http://numbersapi.com/{month}/{day}/date";
-        return this.restTemplate.getForObject(url, String.class, date.getMonthValue(),date.getDayOfMonth());
-    }
+	public String getFunFact(LocalDate date) {
+		String url = "http://numbersapi.com/{month}/{day}/date";
+		return this.restTemplate.getForObject(url, String.class, date.getMonthValue(), date.getDayOfMonth());
+	}
 }

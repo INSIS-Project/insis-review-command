@@ -13,18 +13,18 @@ import com.isep.acme.services.UserService;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+	private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public UserView getUser(@PathVariable final Long userId) {
+	@GetMapping("/{userId}")
+	public UserView getUser(@PathVariable final Long userId) {
 
-        return userService.getUser(userId);
-    }
+		return userService.getUser(userId);
+	}
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserDetails> create(@PathVariable final String username) {
-        UserDetails userDetails = userService.loadUserByUsername(username);
+	@GetMapping("/username/{username}")
+	public ResponseEntity<UserDetails> create(@PathVariable final String username) {
+		UserDetails userDetails = userService.loadUserByUsername(username);
 
-        return ResponseEntity.ok().body(userDetails);
-    }
+		return ResponseEntity.ok().body(userDetails);
+	}
 }

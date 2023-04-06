@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class UserView {
-    String userId;
+	String userId;
 
-    String username;
+	String username;
 
-    String fullName;
+	String fullName;
 }
