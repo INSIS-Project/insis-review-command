@@ -22,7 +22,6 @@ import com.isep.acme.services.ReviewService;
 import com.isep.acme.services.UserService;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,11 +44,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Autowired
 	RestService restService;
-
-	@Override
-	public Iterable<Review> getAll() {
-		return reviewRepository.findAll();
-	}
 
 	@Override
 	public ReviewDTO create(final CreateReviewDTO createReviewDTO, String sku) {
@@ -88,42 +82,6 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<ReviewDTO> getReviewsOfProduct(String sku, String status) {
-
-		Optional<Product> product = productRepository.findBySku(sku);
-		if (product.isEmpty())
-			return null;
-
-		Optional<List<Review>> r = reviewRepository.findByProductIdStatus(product.get(), status);
-
-		if (r.isEmpty())
-			return null;
-
-		return ReviewMapper.toDtoList(r.get());
-	}
-
-	@Override
-	public Double getWeightedAverage(Product product) {
-
-		Optional<List<Review>> r = reviewRepository.findByProductId(product);
-
-		if (r.isEmpty())
-			return 0.0;
-
-		double sum = 0;
-
-		for (Review rev : r.get()) {
-			Rating rate = rev.getRating();
-
-			if (rate != null) {
-				sum += rate.getRate();
-			}
-		}
-
-		return sum / r.get().size();
-	}
-
-	@Override
 	public Boolean DeleteReview(Long reviewId) {
 
 		Optional<Review> rev = reviewRepository.findById(reviewId);
@@ -137,18 +95,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 		return true;
 
-	}
-
-	@Override
-	public List<ReviewDTO> findPendingReview() {
-
-		Optional<List<Review>> r = reviewRepository.findPendingReviews();
-
-		if (r.isEmpty()) {
-			return null;
-		}
-
-		return ReviewMapper.toDtoList(r.get());
 	}
 
 	@Override
@@ -172,19 +118,4 @@ public class ReviewServiceImpl implements ReviewService {
 		return ReviewMapper.toDto(review);
 	}
 
-	@Override
-	public List<ReviewDTO> findReviewsByUser(Long userID) {
-
-		final Optional<User> user = userRepository.findById(userID);
-
-		if (user.isEmpty())
-			return null;
-
-		Optional<List<Review>> r = reviewRepository.findByUserId(user.get());
-
-		if (r.isEmpty())
-			return null;
-
-		return ReviewMapper.toDtoList(r.get());
-	}
 }
