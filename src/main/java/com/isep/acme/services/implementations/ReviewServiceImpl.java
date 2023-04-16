@@ -1,121 +1,115 @@
 package com.isep.acme.services.implementations;
 
-import com.isep.acme.controllers.ResourceNotFoundException;
-import com.isep.acme.dtos.ReviewDTO;
-// import com.isep.acme.dtos.VoteReviewDTO;
-import com.isep.acme.dtos.usecases.CreateReviewDTO;
-import com.isep.acme.mappers.ReviewMapper;
-
-import java.lang.IllegalArgumentException;
-
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.isep.acme.model.*;
-
-import com.isep.acme.repositories.ReviewRepository;
+import com.isep.acme.controllers.ResourceNotFoundException;
+import com.isep.acme.dtos.VoteReviewDTO;
+import com.isep.acme.mappers.ReviewMapper;
+import com.isep.acme.model.Product;
+import com.isep.acme.model.Review;
+import com.isep.acme.model.Vote;
 import com.isep.acme.repositories.ProductRepository;
-import com.isep.acme.repositories.UserRepository;
+import com.isep.acme.repositories.ReviewRepository;
+import com.isep.acme.services.ProductService;
 import com.isep.acme.services.RatingService;
 import com.isep.acme.services.RestService;
 import com.isep.acme.services.ReviewService;
-import com.isep.acme.services.UserService;
 
-import java.time.LocalDate;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ReviewServiceImpl implements ReviewService {
 
-	@Autowired
-	ReviewRepository reviewRepository;
+    @Autowired
+    ReviewRepository reviewRepository;
+    
+    @Autowired
+    ProductRepository productRepository;
 
-	@Autowired
-	ProductRepository productRepository;
+    @Autowired
+    RatingService ratingService;
+    
+    @Autowired
+    RestService restService;
+    
+    @Autowired
+    ProductService productService;
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    ReviewMapper reviewMapper;
 
-	@Autowired
-	UserService userService;
+    @Override
+    public Review create(final Review review, final Product product) {
 
-	@Autowired
-	RatingService ratingService;
+        String funfact = restService.getFunFact(LocalDate.now());   
 
-	@Autowired
-	RestService restService;
+        review.setFunFact(funfact);
+        review.setProduct(product);
+        review.setApprovalStatus("pending");
+        reviewRepository.save(review);
 
-	@Override
-	public ReviewDTO create(final CreateReviewDTO createReviewDTO, String sku) {
+        return review;
+    }
 
-		final Optional<Product> product = productRepository.findBySku(sku);
+    @Override
+    public Review createWithReview(Review review) {
 
-		if (product.isEmpty())
-			return null;
+        reviewRepository.findById(review.getIdReview())
+                .ifPresent(existingReview -> {
+                    throw new IllegalArgumentException("Review with ID " + review.getIdReview() + " already exists.");
+                });
 
-		final var user = userService.getUserId(createReviewDTO.getUserID());
+        return reviewRepository.save(review);
+    }
 
-		if (user.isEmpty())
-			return null;
+    @Override
+    public Review moderateReview(Long reviewID, String status)
+            throws ResourceNotFoundException, IllegalArgumentException {
 
-		Rating rating = null;
-		Optional<Rating> r = ratingService.findByRate(createReviewDTO.getRating());
-		if (r.isPresent()) {
-			rating = r.get();
-		}
+        Review reviewToUpdate = reviewRepository.findById(reviewID)
+            .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        System.out.println("Review to update: " + reviewToUpdate.getVotes());
+        if (reviewToUpdate.setApprovalStatus(status))
+            return reviewRepository.save(reviewToUpdate);
 
-		LocalDate date = LocalDate.now();
+        return null;
+    }
 
-		String funfact = restService.getFunFact(date);
+    @Override
+    public Boolean deleteReview(Long reviewId) {
 
-		if (funfact == null)
-			return null;
+        Review reviewToDelete = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        //not possible delet review with votes
+        if (reviewToDelete.getVotes() != null){
+            log.info("Review with votes can't be deleted");
+            return false;
+        }
+   
+        reviewRepository.delete(reviewToDelete);
+        return true;
+    }
 
-		Review review = new Review(createReviewDTO.getReviewText(), date, product.get(), funfact, rating, user.get());
+    @Override
+    public Review addVoteToReview(Long reviewID, Vote vote){
+        try {
+            Review review = reviewRepository.findById(reviewID).orElseThrow(() -> new ResourceNotFoundException("Review not found"));        
+            System.out.println("Review: " + review.getVotes());
+            review.addVote(vote);
+            System.out.println("Review: " + review.getVotes());
+            return reviewRepository.save(review);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Error adding vote to review");
+        }
 
-		review = reviewRepository.save(review);
-
-		if (review == null)
-			return null;
-
-		return ReviewMapper.toDto(review);
-	}
-
-	@Override
-	public Boolean DeleteReview(Long reviewId) {
-
-		Optional<Review> rev = reviewRepository.findById(reviewId);
-
-		if (rev.isEmpty()) {
-			return null;
-		}
-
-		Review r = rev.get();
-		reviewRepository.delete(r);
-
-		return true;
-
-	}
-
-	@Override
-	public ReviewDTO moderateReview(Long reviewID, String approved)
-			throws ResourceNotFoundException, IllegalArgumentException {
-
-		Optional<Review> r = reviewRepository.findById(reviewID);
-
-		if (r.isEmpty()) {
-			throw new ResourceNotFoundException("Review not found");
-		}
-
-		Boolean ap = r.get().setApprovalStatus(approved);
-
-		if (!ap) {
-			throw new IllegalArgumentException("Invalid status value");
-		}
-
-		Review review = reviewRepository.save(r.get());
-
-		return ReviewMapper.toDto(review);
-	}
-
+    }
 }

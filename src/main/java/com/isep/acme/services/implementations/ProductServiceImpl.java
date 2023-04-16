@@ -1,13 +1,14 @@
 package com.isep.acme.services.implementations;
 
-import com.isep.acme.model.Product;
-import com.isep.acme.repositories.ProductRepository;
-import com.isep.acme.services.ProductService;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.isep.acme.model.Product;
+import com.isep.acme.repositories.ProductRepository;
+import com.isep.acme.services.ProductService;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -28,5 +29,5 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void deleteBySku(String sku) {
 		repository.deleteBySku(sku);
-	}
+	}    
 }

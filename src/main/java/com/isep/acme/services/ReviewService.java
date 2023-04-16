@@ -1,14 +1,20 @@
 package com.isep.acme.services;
 
-import com.isep.acme.dtos.ReviewDTO;
-import com.isep.acme.dtos.usecases.CreateReviewDTO;
+import org.springframework.stereotype.Service;
 
+import com.isep.acme.dtos.VoteReviewDTO;
+import com.isep.acme.model.Product;
+import com.isep.acme.model.Review;
+import com.isep.acme.model.Vote;
+
+@Service
 public interface ReviewService {
 
-	ReviewDTO create(CreateReviewDTO createReviewDTO, String sku);
+	Review create(Review review, Product product);
+    Review createWithReview(Review review);
 
-	Boolean DeleteReview(Long reviewId);
+	Boolean deleteReview(Long reviewId);
 
-	ReviewDTO moderateReview(Long reviewID, String approved);
-
+	Review moderateReview(Long reviewID, String status);
+	Review addVoteToReview(Long reviewID, Vote vote);
 }
