@@ -14,4 +14,5 @@ public class VoteDTO {
     private long voteId;
     private voteType voteType;
     private long idReview;
+    private String user;
 } 

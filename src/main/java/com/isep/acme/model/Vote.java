@@ -28,12 +28,13 @@ public class Vote {
 
     @ManyToOne
     @JoinColumn(name = "review_id")
-    private Review review;
+    private Review review; 
 
-     
+    @Column
+    private String user;
 
     @Override
     public String toString() {
-        return "Vote [voteID=" + voteID + ", voteType=" + voteType + "]";
+        return "Vote [voteID=" + voteID + ", voteType=" + voteType + ", user=" + user + "]";
     }
 }

@@ -29,6 +29,7 @@ public class VoteMapper {
         Vote vote = new Vote();
         vote.setVoteID(voteReviewDTO.getVoteId());
         vote.setVoteType(voteReviewDTO.getVoteType());
+        vote.setUser(voteReviewDTO.getUser());
         return vote;
     }
 }
