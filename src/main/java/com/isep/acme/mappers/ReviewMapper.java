@@ -34,7 +34,8 @@ public class ReviewMapper {
         for (Vote vote : review.getVotes()) {
             VoteReviewDTO voteDTO = new VoteReviewDTO( 
                 vote.getVoteID(),
-                vote.getVoteType()
+                vote.getVoteType(),
+                vote.getUser()
             );
             votesDTO.add(voteDTO);
         }

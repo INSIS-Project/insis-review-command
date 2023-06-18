@@ -16,4 +16,5 @@ import lombok.Setter;
 public class VoteReviewDTO {
 	private Long voteId;
 	private voteType voteType;
+	private String user;
 }
